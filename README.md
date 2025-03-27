@@ -3,7 +3,7 @@ Wanna reduce your json file size in Unity? Use Brotli Json compression!
 
 ## Features
 
-- **Brotli Compression/Decompression**
+- **Brotli Compression/Decompression ~%75 Reduced Size**
 - Batch processing of folders
 - File/Folder selection support
 - Custom `.br` file importer
