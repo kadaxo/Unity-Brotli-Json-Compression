@@ -8,6 +8,7 @@ public class BrotliCompressorEditor : EditorWindow
 {
     private static string jsonFolderPath = "Assets/Resources";
     private static bool deleteOriginalFiles = false;
+    private static bool minifyJson = true;
     private static CompressionLevel compressionLevel = CompressionLevel.Optimal;
 
     [MenuItem("Tools/BrotliJson")]
@@ -19,6 +20,7 @@ public class BrotliCompressorEditor : EditorWindow
         GUILayout.Label("Brotli JSON Compression/Decompression", EditorStyles.boldLabel);
         jsonFolderPath = EditorGUILayout.TextField("Target Path", jsonFolderPath);
         deleteOriginalFiles = EditorGUILayout.Toggle("Delete Originals?", deleteOriginalFiles);
+        minifyJson = EditorGUILayout.Toggle("Minify JSON?", minifyJson);
         compressionLevel = (CompressionLevel)EditorGUILayout.EnumPopup("Compression Level", compressionLevel);
 
         DrawOperationButtons("Batch Operations", 
@@ -80,6 +82,13 @@ public class BrotliCompressorEditor : EditorWindow
         try
         {
             var json = File.ReadAllText(jsonPath);
+                        
+            if (minifyJson)
+            {
+                var token = JToken.Parse(json);
+                json = token.ToString(Formatting.None);
+            }
+            
             var compressed = BrotliUtility.Compress(json, compressionLevel);
             
             var brPath = Path.ChangeExtension(jsonPath, ".br");
@@ -99,6 +108,12 @@ public class BrotliCompressorEditor : EditorWindow
         {
             var compressed = File.ReadAllBytes(brPath);
             var json = BrotliUtility.Decompress(compressed);
+    
+            if (minifyJson)
+            {
+                var token = JToken.Parse(json);
+                json = token.ToString(Formatting.None);
+            }
             
             var jsonPath = Path.ChangeExtension(brPath, ".json");
             File.WriteAllText(jsonPath, json);
